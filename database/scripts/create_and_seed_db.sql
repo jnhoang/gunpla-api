@@ -1,9 +1,9 @@
 -- create the database
-DROP DATABASE IF EXISTS gunpla_db;
-CREATE DATABASE gunpla_db;
+-- DROP DATABASE IF EXISTS gunpla_db;
+-- CREATE DATABASE gunpla_db;
 
 -- connect to the database
-\c gunpla_db;
+-- \c gunpla_db;
 
 
 -- create tables
