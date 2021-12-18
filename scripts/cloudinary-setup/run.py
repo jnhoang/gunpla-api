@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from os.path import join, dirname
 from typing import List
 
@@ -20,9 +21,13 @@ cloudinary.config(
   api_secret =  os.getenv("CLOUDINARY_API_SECRET"),
 )
 
-FILENAME = 're'
+
+BRAND = 'bandai'
+GRADE = 'pg'
+
+FILENAME  = 'pg'
 FILE_SRC_LOCATION =  '../scraper/output/usa_gundam/pass-5-manual-updates/%s.json'
-OUTPUT_LOCATION   =  './output/%s.json'
+OUTPUT_LOCATION   =  './output/%s.json' % GRADE
 
 
 def main():
@@ -34,28 +39,35 @@ def main():
   foo = get_kit_file(FILE_SRC_LOCATION % FILENAME)
   # print(foo)
   # print(type(foo))
-  for kit, data in foo.items():
-    print('data:', data)
-    if kit == 'other-kits': continue
-    counter = 0
+  for kit_name, data in foo.items():
+    if kit_name == 'other-kits':
+      continue
+    cloud_dir = f'{BRAND}/{GRADE}/{kit_name}'
+
+    data['pics'] = []
     for img in data['images']:
-      cloudinary_upload(img, public_id = f"kit-{counter}")
-      counter += 1
-    break
-
-  # open file  - ../scraper/output/usa_gundam/pass-5-manual-updates/re.json
-  # loop through dict of kit / value
-    # loop through images key
-      # wrap try/exception block here
-        # upload img to cloudinary
-        # save cloudinary['secure_url'] to kit['pics']
-      # exception
-        # save into errors file in ./output/errors.txt
-        # kit, scale
+      filename = rename_url_as_filename(img)
+      # print(filename)
+      try:
+        new_url = cloudinary_upload(img, public_id = f'{cloud_dir}/{filename}')
+        print('new', new_url)
+        # append the new_url to the data[pics]
+        data['pics'].append(new_url)
+      except Exception as e:
+        add_to_error_log(e)
   # open new file and save result  - ./output/<FILE_NAME>.json
-
+  with open(OUTPUT_LOCATION, 'w') as f:
+    f.write(json.dumps(foo, indent=2))
   print('done')
   return
+
+
+def rename_url_as_filename(url: str):
+  # strip fr ont part
+  filename = url.split('/products/')[1]
+  # sprint end part
+  filename = filename.split('.')[0]
+  return filename
 
 
 def get_kit_file(file_location:str):
@@ -66,9 +78,21 @@ def get_kit_file(file_location:str):
 
 def cloudinary_upload(url:str, public_id: str, tags: List[str]=[]):
   res = cloudinary.uploader.upload(url, public_id=public_id, tags=tags)
-  print(res['public_id'])
+  return res['url']
+
+def add_to_error_log(error):
+  with open('./errors.txt', 'a') as f:
+    f.write(str(error))
   return
 
-
 if __name__ == '__main__':
+  start_time = time.time()
   main()
+  end_time = round((time.time() - start_time) / 60, 2)
+  print(f'execution time: {end_time} mins',)
+
+
+# TODO
+'''
+- fix thet re and rg files or
+'''
