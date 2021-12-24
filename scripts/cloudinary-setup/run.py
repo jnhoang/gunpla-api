@@ -26,7 +26,6 @@ cloudinary.config(
 BRAND = 'bandai'
 GRADE = 'p-bandai'
 
-FILENAME  = 'p-bandai'
 FILE_SRC_LOCATION =  '../scraper/output/usa_gundam/pass-5-manual-updates/%s.json'
 OUTPUT_LOCATION   =  './output/%s.json' % GRADE
 
@@ -37,7 +36,7 @@ def main():
     # HOW TO SET FOLDER DEPTH
       # grade/kit/file
 
-  input_kit  =  get_kit_file(FILE_SRC_LOCATION % FILENAME)
+  input_kit  =  get_kit_file(FILE_SRC_LOCATION % GRADE)
   total_kits =  len(input_kit.keys())
   print(total_kits)
 
@@ -91,6 +90,7 @@ def cloudinary_upload(url:str, public_id: str, tags: List[str]=[]):
   res = cloudinary.uploader.upload(url, public_id=public_id, tags=tags)
   return res['url']
 
+
 def add_to_error_log(error):
   with open('./errors.txt', 'a') as f:
     f.write(str(error))
@@ -98,12 +98,7 @@ def add_to_error_log(error):
 
 if __name__ == '__main__':
   start_time = time.time()
-  main()
+  # main()
+  main2()
   end_time = round((time.time() - start_time) / 60, 2)
   print(f'execution time: {end_time} mins',)
-
-
-# TODO
-'''
-- fix thet re and rg files or
-'''
