@@ -22,42 +22,53 @@ cloudinary.config(
 )
 
 
+### hg, p-bandai, sd
 BRAND = 'bandai'
-GRADE = 'pg'
+GRADE = 'p-bandai'
 
-FILENAME  = 'pg'
+FILENAME  = 'p-bandai'
 FILE_SRC_LOCATION =  '../scraper/output/usa_gundam/pass-5-manual-updates/%s.json'
 OUTPUT_LOCATION   =  './output/%s.json' % GRADE
 
 
 def main():
-  print('top of main')
+  print('script starting')
   # CONSIDERATIONS
     # HOW TO SET FOLDER DEPTH
       # grade/kit/file
 
-  foo = get_kit_file(FILE_SRC_LOCATION % FILENAME)
-  # print(foo)
-  # print(type(foo))
-  for kit_name, data in foo.items():
+  input_kit  =  get_kit_file(FILE_SRC_LOCATION % FILENAME)
+  total_kits =  len(input_kit.keys())
+  print(total_kits)
+
+  count = 0
+  for kit_name, data in input_kit.items():
     if kit_name == 'other-kits':
       continue
+
+    print(f'------kit: {count}/{total_kits}')
     cloud_dir = f'{BRAND}/{GRADE}/{kit_name}'
 
     data['pics'] = []
     for img in data['images']:
+
+      # get the image filename
       filename = rename_url_as_filename(img)
-      # print(filename)
+
+      # upload img to cloud service
       try:
         new_url = cloudinary_upload(img, public_id = f'{cloud_dir}/{filename}')
-        print('new', new_url)
-        # append the new_url to the data[pics]
-        data['pics'].append(new_url)
+        print(new_url)
       except Exception as e:
         add_to_error_log(e)
+
+      # append the new_url to the data[pics]
+      data['pics'].append(new_url)
+    count += 1
+
   # open new file and save result  - ./output/<FILE_NAME>.json
   with open(OUTPUT_LOCATION, 'w') as f:
-    f.write(json.dumps(foo, indent=2))
+    f.write(json.dumps(input_kit, indent=2))
   print('done')
   return
 
