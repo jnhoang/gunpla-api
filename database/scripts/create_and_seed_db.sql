@@ -120,8 +120,7 @@ VALUES
   ('kotobukiya', 'kotobukiya', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1)
 ;
 
-INSERT INTO series (access_name, display_name, created_date, updated_date, user_update_id)
-VALUES
+INSERT INTO series (access_name, display_name, created_date, updated_date, user_update_id) VALUES
   ('00', '00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
   ('08th_ms_team', '08th ms team', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),
   ('age', 'age', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1),

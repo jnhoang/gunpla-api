@@ -8,4 +8,6 @@ services:
       - ~/volumes/gunpla_db:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=foobar
+      - POSTGRES_DB=gunpla_db
 
